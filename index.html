@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Anonymous Peer Support</title>
+  <title>Anonama — Anonymous Peer Support</title>
   <style>
+    * { box-sizing: border-box; }
     body {
       background-color: #0f172a;
       color: #f8fafc;
@@ -12,100 +13,244 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
+      padding: 15px;
     }
-    .dashboard {
-      width: 90%;
-      max-width: 600px;
+    .card {
+      width: 100%;
+      max-width: 650px;
       background-color: #1e293b;
       border: 1px solid #334155;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
     }
-    .header {
-      border-bottom: 1px solid #334155;
-      padding-bottom: 10px;
-      margin-bottom: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .status-badge {
-      background-color: #10b981;
-      color: #064e3b;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: bold;
-    }
-    .chat-box {
-      height: 300px;
-      overflow-y: auto;
-      background-color: #0f172a;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 15px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .message-bubble {
-      background-color: #334155;
-      padding: 10px 15px;
-      border-radius: 15px 15px 15px 2px;
-      max-width: 80%;
-      font-size: 0.95rem;
-      word-wrap: break-word;
-    }
-    .input-area {
-      display: flex;
-      gap: 10px;
-    }
+    .hidden { display: none !important; }
+    h2 { margin: 0 0 8px 0; font-size: 1.4rem; }
+    p.sub { color: #94a3b8; font-size: 0.9rem; margin: 0 0 20px 0; }
+    .form-group { display: flex; flex-direction: column; gap: 12px; }
     input {
-      flex: 1;
-      padding: 12px;
+      padding: 12px 14px;
       border-radius: 8px;
       border: 1px solid #475569;
       background-color: #0f172a;
-      color: white;
+      color: #f8fafc;
+      font-size: 0.95rem;
       outline: none;
     }
+    input:focus { border-color: #3b82f6; }
     button {
-      padding: 12px 20px;
+      padding: 12px 18px;
       border: none;
       border-radius: 8px;
       background-color: #3b82f6;
       color: white;
-      font-weight: bold;
+      font-weight: 600;
+      font-size: 0.95rem;
       cursor: pointer;
     }
-    button:hover {
-      background-color: #2563eb;
+    button:hover { background-color: #2563eb; }
+    button.secondary { background-color: #334155; }
+    button.secondary:hover { background-color: #475569; }
+    button.danger { background-color: #ef4444; padding: 6px 12px; font-size: 0.8rem; }
+    button.danger:hover { background-color: #dc2626; }
+    .error-msg { color: #f87171; font-size: 0.85rem; margin-top: 8px; min-height: 18px; }
+    
+    /* Top Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .user-info { font-size: 0.82rem; color: #94a3b8; }
+    .user-info strong { color: #38bdf8; }
+    .badge {
+      background-color: #10b981;
+      color: #064e3b;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .tab-btn {
+      flex: 1;
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      color: #94a3b8;
+    }
+    .tab-btn.active {
+      background-color: #3b82f6;
+      border-color: #3b82f6;
+      color: white;
+    }
+
+    /* Chat Box */
+    .chat-box {
+      height: 320px;
+      overflow-y: auto;
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .msg {
+      background-color: #334155;
+      padding: 10px 14px;
+      border-radius: 12px 12px 12px 2px;
+      max-width: 82%;
+      font-size: 0.93rem;
+      word-wrap: break-word;
+      align-self: flex-start;
+    }
+    .msg.mine {
+      background-color: #1d4ed8;
+      border-radius: 12px 12px 2px 12px;
+      align-self: flex-end;
+    }
+    .msg-sender {
+      font-size: 0.75rem;
+      font-weight: bold;
+      color: #93c5fd;
+      margin-bottom: 4px;
+      display: block;
+    }
+    .msg.mine .msg-sender { color: #dbeafe; }
+    .input-row { display: flex; gap: 10px; }
+    .input-row input { flex: 1; }
+
+    /* Private Code Box */
+    .code-panel {
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+    .room-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #0f172a;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #334155;
+      font-size: 0.88rem;
     }
   </style>
 </head>
 <body>
 
-  <div class="dashboard">
-    <div class="header">
-      <h2 style="margin: 0; font-size: 1.2rem;">Peer Support Terminal</h2>
-      <span class="status-badge">● LIVE</span>
+  <!-- 1. LOGIN / SIGN UP VIEW -->
+  <div class="card" id="authCard">
+    <h2>Anonama Peer Support</h2>
+    <p class="sub">Sign in to connect. Your email stays strictly private—others only see your anonymous peer ID.</p>
+    <div class="form-group">
+      <input type="email" id="emailInput" placeholder="Enter your email" required>
+      <input type="password" id="passwordInput" placeholder="Password (min. 6 characters)" required>
+      <div style="display: flex; gap: 10px;">
+        <button id="loginBtn" style="flex: 1;">Log In</button>
+        <button id="signupBtn" class="secondary" style="flex: 1;">Create Account</button>
+      </div>
+    </div>
+    <div class="error-msg" id="authError"></div>
+  </div>
+
+  <!-- 2. MAIN DASHBOARD VIEW -->
+  <div class="card hidden" id="appCard">
+    <div class="top-bar">
+      <div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <h2 style="margin: 0; font-size: 1.2rem;">Anonama</h2>
+          <span class="badge">● LIVE</span>
+        </div>
+        <div class="user-info">
+          Private account: <span id="myEmailDisplay"></span> | Public alias: <strong id="myAliasDisplay"></strong>
+        </div>
+      </div>
+      <button id="logoutBtn" class="danger">Log Out</button>
     </div>
 
-    <div class="chat-box" id="chatBox"></div>
+    <!-- Section Switcher -->
+    <div class="tabs">
+      <button class="tab-btn active" id="tabPublic">Public Room (Everyone)</button>
+      <button class="tab-btn" id="tabPrivate">Private 1-on-1 (Code)</button>
+    </div>
 
-    <div class="input-area">
-      <input type="text" id="messageInput" placeholder="Type an anonymous message...">
-      <button id="sendBtn">Send</button>
+    <!-- PUBLIC CHAT SECTION -->
+    <div id="publicSection">
+      <div class="chat-box" id="publicChatBox"></div>
+      <div class="input-row">
+        <input type="text" id="publicInput" placeholder="Message everyone anonymously...">
+        <button id="publicSendBtn">Send</button>
+      </div>
+    </div>
+
+    <!-- PRIVATE 2-PERSON CODE SECTION -->
+    <div id="privateSection" class="hidden">
+      <!-- Enter/Generate Code Screen -->
+      <div id="codeJoinBox" class="code-panel">
+        <p style="margin: 0 0 12px 0; font-size: 0.9rem; color: #cbd5e1;">
+          Enter a secret room code shared with one peer, or generate a new code to invite someone:
+        </p>
+        <div class="input-row" style="margin-bottom: 10px;">
+          <input type="text" id="roomCodeInput" placeholder="e.g. HOPE-482" style="text-transform: uppercase;">
+          <button id="joinRoomBtn">Join Room</button>
+        </div>
+        <button id="generateCodeBtn" class="secondary" style="width: 100%;">Generate New Secret Code</button>
+        <div class="error-msg" id="roomError"></div>
+      </div>
+
+      <!-- Active Private Room Chat -->
+      <div id="privateRoomActive" class="hidden">
+        <div class="room-header">
+          <span>Secret Room Code: <strong id="activeCodeLabel" style="color: #38bdf8; letter-spacing: 1px;"></strong> (Max 2 people)</span>
+          <button id="leaveRoomBtn" class="secondary" style="padding: 5px 10px; font-size: 0.8rem;">Leave Room</button>
+        </div>
+        <div class="chat-box" id="privateChatBox"></div>
+        <div class="input-row">
+          <input type="text" id="privateInput" placeholder="Private message (only visible to you two)...">
+          <button id="privateSendBtn">Send</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Firebase Live Connection Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, push, onChildAdded } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { 
+      getAuth, 
+      createUserWithEmailAndPassword, 
+      signInWithEmailAndPassword, 
+      signOut, 
+      onAuthStateChanged 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { 
+      getDatabase, 
+      ref, 
+      push, 
+      onChildAdded, 
+      get, 
+      set, 
+      off 
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAVQVwnQcF-zyWLVw3J-5ul2FX6O-8VnVo",
@@ -117,48 +262,220 @@
       appId: "1:1050497729249:web:04254e34a32bad16502da0"
     };
 
-    // Initialize Firebase & Realtime Database
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getDatabase(app);
-    const messagesRef = ref(db, "messages");
 
-    const chatBox = document.getElementById("chatBox");
-    const messageInput = document.getElementById("messageInput");
-    const sendBtn = document.getElementById("sendBtn");
+    // UI Elements
+    const authCard = document.getElementById("authCard");
+    const appCard = document.getElementById("appCard");
+    const emailInput = document.getElementById("emailInput");
+    const passwordInput = document.getElementById("passwordInput");
+    const authError = document.getElementById("authError");
+    const myEmailDisplay = document.getElementById("myEmailDisplay");
+    const myAliasDisplay = document.getElementById("myAliasDisplay");
 
-    // Function to send a message to Firebase
-    function sendMessage() {
-      const text = messageInput.value.trim();
-      if (text !== "") {
-        push(messagesRef, {
-          text: text,
-          timestamp: Date.now()
-        });
-        messageInput.value = "";
+    const tabPublic = document.getElementById("tabPublic");
+    const tabPrivate = document.getElementById("tabPrivate");
+    const publicSection = document.getElementById("publicSection");
+    const privateSection = document.getElementById("privateSection");
+
+    const publicChatBox = document.getElementById("publicChatBox");
+    const publicInput = document.getElementById("publicInput");
+    const publicSendBtn = document.getElementById("publicSendBtn");
+
+    const codeJoinBox = document.getElementById("codeJoinBox");
+    const roomCodeInput = document.getElementById("roomCodeInput");
+    const roomError = document.getElementById("roomError");
+    const privateRoomActive = document.getElementById("privateRoomActive");
+    const activeCodeLabel = document.getElementById("activeCodeLabel");
+    const privateChatBox = document.getElementById("privateChatBox");
+    const privateInput = document.getElementById("privateInput");
+    const privateSendBtn = document.getElementById("privateSendBtn");
+
+    let currentUser = null;
+    let myAlias = "";
+    let publicRef = null;
+    let activePrivateMessagesRef = null;
+
+    // Generate deterministic anonymous alias from UID (never exposes email)
+    function getAnonymousAlias(uid) {
+      let hash = 0;
+      for (let i = 0; i < uid.length; i++) {
+        hash = (hash << 5) - hash + uid.charCodeAt(i);
+        hash |= 0;
       }
+      const num = Math.abs(hash % 9000) + 1000;
+      return `Peer #${num}`;
     }
 
-    // Send on button click or Enter key
-    sendBtn.addEventListener("click", sendMessage);
-    messageInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") sendMessage();
-    });
-
-    // Listen for new messages in real time and display them
-    onChildAdded(messagesRef, (snapshot) => {
-      const data = snapshot.val();
+    // Helper to render message safely
+    function appendMessage(container, data, isMine) {
       const bubble = document.createElement("div");
-      bubble.className = "message-bubble";
-      bubble.innerHTML = `<strong>Peer:</strong> `;
-      
-      // Use textContent for the user's message to prevent HTML injection
-      const msgText = document.createTextNode(data.text);
-      bubble.appendChild(msgText);
-      
-      chatBox.appendChild(bubble);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    });
-  </script>
+      bubble.className = isMine ? "msg mine" : "msg";
 
+      const sender = document.createElement("span");
+      sender.className = "msg-sender";
+      sender.textContent = isMine ? `${data.alias} (You)` : data.alias;
+
+      const body = document.createElement("div");
+      body.textContent = data.text;
+
+      bubble.appendChild(sender);
+      bubble.appendChild(body);
+      container.appendChild(bubble);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // Auth Actions
+    document.getElementById("signupBtn").addEventListener("click", async () => {
+      authError.textContent = "";
+      try {
+        await createUserWithEmailAndPassword(auth, emailInput.value.trim(), passwordInput.value);
+      } catch (err) {
+        authError.textContent = err.message.replace("Firebase: ", "");
+      }
+    });
+
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      authError.textContent = "";
+      try {
+        await signInWithEmailAndPassword(auth, emailInput.value.trim(), passwordInput.value);
+      } catch (err) {
+        authError.textContent = err.message.replace("Firebase: ", "");
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      leavePrivateRoom();
+      if (publicRef) off(publicRef);
+      signOut(auth);
+    });
+
+    // Listen to Login State
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user;
+        myAlias = getAnonymousAlias(user.uid);
+        myEmailDisplay.textContent = user.email; // Only shown locally to the logged-in user
+        myAliasDisplay.textContent = myAlias;
+
+        authCard.classList.add("hidden");
+        appCard.classList.remove("hidden");
+
+        // Load Public Chat
+        publicChatBox.innerHTML = "";
+        publicRef = ref(db, "public_messages");
+        onChildAdded(publicRef, (snap) => {
+          const data = snap.val();
+          appendMessage(publicChatBox, data, data.uid === currentUser.uid);
+        });
+      } else {
+        currentUser = null;
+        authCard.classList.remove("hidden");
+        appCard.classList.add("hidden");
+      }
+    });
+
+    // Tab Switching
+    tabPublic.addEventListener("click", () => {
+      tabPublic.classList.add("active");
+      tabPrivate.classList.remove("active");
+      publicSection.classList.remove("hidden");
+      privateSection.classList.add("hidden");
+    });
+
+    tabPrivate.addEventListener("click", () => {
+      tabPrivate.classList.add("active");
+      tabPublic.classList.remove("active");
+      privateSection.classList.remove("hidden");
+      publicSection.classList.add("hidden");
+    });
+
+    // Send Public Message
+    function sendPublic() {
+      const text = publicInput.value.trim();
+      if (!text || !currentUser) return;
+      push(ref(db, "public_messages"), {
+        uid: currentUser.uid,
+        alias: myAlias,
+        text: text,
+        timestamp: Date.now()
+      });
+      publicInput.value = "";
+    }
+    publicSendBtn.addEventListener("click", sendPublic);
+    publicInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendPublic(); });
+
+    // Generate Random Room Code
+    document.getElementById("generateCodeBtn").addEventListener("click", () => {
+      const words = ["SAFE", "HOPE", "CALM", "TALK", "KIND", "PEER", "STAR"];
+      const word = words[Math.floor(Math.random() * words.length)];
+      const num = Math.floor(100 + Math.random() * 900);
+      roomCodeInput.value = `${word}-${num}`;
+    });
+
+    // Join or Create Private 2-Person Room
+    document.getElementById("joinRoomBtn").addEventListener("click", async () => {
+      roomError.textContent = "";
+      const code = roomCodeInput.value.trim().toUpperCase().replace(/[^A-Z0-9-]/g, "");
+      if (code.length < 4) {
+        roomError.textContent = "Please enter or generate a valid room code.";
+        return;
+      }
+
+      const membersRef = ref(db, `private_rooms/${code}/members`);
+      const snapshot = await get(membersRef);
+      const members = snapshot.val() || {};
+      const memberIds = Object.keys(members);
+
+      // Enforce strict 2-person limit
+      if (!members[currentUser.uid] && memberIds.length >= 2) {
+        roomError.textContent = "This private room already has 2 people. Generate a new code.";
+        return;
+      }
+
+      // Register current user in this 2-person room
+      await set(ref(db, `private_rooms/${code}/members/${currentUser.uid}`), true);
+
+      // Open private chat view
+      codeJoinBox.classList.add("hidden");
+      privateRoomActive.classList.remove("hidden");
+      activeCodeLabel.textContent = code;
+      privateChatBox.innerHTML = "";
+
+      activePrivateMessagesRef = ref(db, `private_rooms/${code}/messages`);
+      onChildAdded(activePrivateMessagesRef, (snap) => {
+        const data = snap.val();
+        appendMessage(privateChatBox, data, data.uid === currentUser.uid);
+      });
+    });
+
+    function sendPrivate() {
+      const text = privateInput.value.trim();
+      if (!text || !currentUser || !activePrivateMessagesRef) return;
+      push(activePrivateMessagesRef, {
+        uid: currentUser.uid,
+        alias: myAlias,
+        text: text,
+        timestamp: Date.now()
+      });
+      privateInput.value = "";
+    }
+    privateSendBtn.addEventListener("click", sendPrivate);
+    privateInput.addEventListener("keypress", (e) => { if (e.key === "Enter") sendPrivate(); });
+
+    function leavePrivateRoom() {
+      if (activePrivateMessagesRef) {
+        off(activePrivateMessagesRef);
+        activePrivateMessagesRef = null;
+      }
+      privateChatBox.innerHTML = "";
+      privateRoomActive.classList.add("hidden");
+      codeJoinBox.classList.remove("hidden");
+    }
+
+    document.getElementById("leaveRoomBtn").addEventListener("click", leavePrivateRoom);
+  </script>
 </body>
 </html>
